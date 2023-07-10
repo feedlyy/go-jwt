@@ -1,0 +1,16 @@
+{
+  "debug": true,
+  "server": {
+    "address": ":8080"
+  },
+  "context":{
+    "timeout":5
+  },
+  "database": {
+    "host": "localhost",
+    "port": "5432",
+    "user": "user",
+    "name": "pvg"
+  },
+  "jwtSecretKey": "yBTBe37NUR"
+}
