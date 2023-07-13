@@ -9,8 +9,12 @@ import (
 	"github.com/pressly/goose/v3"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"go-jwt/handler"
+	"go-jwt/repository"
+	"go-jwt/service"
 	"log"
 	"net/http"
+	"time"
 )
 
 //go:embed migrations
@@ -65,11 +69,18 @@ func main() {
 	}
 
 	// repos
+	productRepo := repository.NewProductRepository(db)
 
 	// services
+	productService := service.NewProductService(productRepo)
 
 	// handlers
+	timeout := viper.GetInt(`context.timeout`)
 	portAddress := viper.GetString(`server.address`)
+	productHandler := handler.NewProductHandler(productService, time.Duration(timeout)*time.Second)
+
+	// server
 	router := httprouter.New()
+	router.GET("/product", productHandler.GetProductByName)
 	log.Fatal(http.ListenAndServe(portAddress, router))
 }
