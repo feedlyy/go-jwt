@@ -35,6 +35,7 @@ func (p productHandler) GetProductByName(w http.ResponseWriter, r *http.Request,
 		res  = domain.Products{}
 		name = r.URL.Query().Get("name")
 		ctxx = context.Background()
+		// userInfo = r.Context().Value("userInfo").(jwt.MapClaims) -- for get user logged info
 	)
 	w.Header().Set("Content-Type", "application/json")
 

@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"go-jwt/domain"
 	"go-jwt/handler"
+	customMiddleware "go-jwt/middleware"
 	"go-jwt/repository"
 	"go-jwt/service"
 	"log"
@@ -90,10 +91,11 @@ func main() {
 	timeOutContext := time.Duration(timeout) * time.Second
 	productHandler := handler.NewProductHandler(productService, timeOutContext)
 	userHandler := handler.NewUserHandler(userService, timeOutContext)
+	middleware := customMiddleware.NewMiddleware(jwt)
 
 	// server
 	router := httprouter.New()
-	router.GET("/product", productHandler.GetProductByName)
+	router.GET("/product", middleware.AuthJWTMiddleware(productHandler.GetProductByName))
 	router.POST("/login", userHandler.Authentication)
 	logrus.Infof("Server run on localhost%v", portAddress)
 	log.Fatal(http.ListenAndServe(portAddress, router))

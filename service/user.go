@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 	"go-jwt/domain"
@@ -38,11 +39,12 @@ func (u userService) Authentication(ctx context.Context, username, password stri
 		logrus.Errorf("Users - Service|Password err, err:%v", err)
 		return "", errors.New(helpers.IncorrectPassword)
 	}
+	fmt.Println(user.Username.String)
 
 	claims = domain.JwtClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    u.jwt.ApplicationName,
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(u.jwt.Expired))),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(u.jwt.Expired) * time.Hour)),
 		},
 		Username: user.Username.String,
 		Role:     user.Role.String,

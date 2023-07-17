@@ -24,7 +24,7 @@ func (u userRepository) GetByUsername(ctx context.Context, username string) (dom
 		stmt *sqlx.Stmt
 		row  *sqlx.Row
 	)
-	sql, _, err = sq.Select("id", "name", "password", "role").
+	sql, _, err = sq.Select("id", "username", "password", "role").
 		From("users").Where(sq.And{
 		sq.Eq{"name": "name"},
 	}).PlaceholderFormat(sq.Dollar).ToSql()
@@ -41,7 +41,7 @@ func (u userRepository) GetByUsername(ctx context.Context, username string) (dom
 	defer stmt.Close()
 
 	row = stmt.QueryRowxContext(ctx, username)
-	err = row.Scan(&res.Id, &res.Name, &res.Password, &res.Role)
+	err = row.Scan(&res.Id, &res.Username, &res.Password, &res.Role)
 	if err != nil {
 		logrus.Errorf("Users - Repository|err when scan data, err:%v", err)
 		return domain.Users{}, err
