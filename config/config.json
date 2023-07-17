@@ -12,5 +12,9 @@
     "user": "user",
     "name": "jwt"
   },
-  "jwtSecretKey": "yBTBe37NUR"
+  "jwt": {
+    "applicationName": "test-jwt",
+    "secretKey": "yBTBe37NUR",
+    "expired": 1
+  }
 }

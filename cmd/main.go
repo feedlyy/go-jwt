@@ -9,6 +9,7 @@ import (
 	"github.com/pressly/goose/v3"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"go-jwt/domain"
 	"go-jwt/handler"
 	"go-jwt/repository"
 	"go-jwt/service"
@@ -38,6 +39,13 @@ func main() {
 	customFormatter.TimestampFormat = "2006-01-02 15:04:05"
 	customFormatter.FullTimestamp = true
 	logrus.SetFormatter(customFormatter)
+
+	// jwt
+	jwt := domain.JwtCredentials{
+		ApplicationName: viper.GetString(`jwt.applicationName`),
+		SecretKey:       viper.GetString(`jwt.secretKey`),
+		Expired:         viper.GetInt(`jwt.expired`),
+	}
 
 	dbHost := viper.GetString(`database.host`)
 	dbUser := viper.GetString(`database.user`)
@@ -70,17 +78,23 @@ func main() {
 
 	// repos
 	productRepo := repository.NewProductRepository(db)
+	userRepo := repository.NewUserRepository(db)
 
 	// services
 	productService := service.NewProductService(productRepo)
+	userService := service.NewUserService(userRepo, jwt)
 
 	// handlers
 	timeout := viper.GetInt(`context.timeout`)
 	portAddress := viper.GetString(`server.address`)
-	productHandler := handler.NewProductHandler(productService, time.Duration(timeout)*time.Second)
+	timeOutContext := time.Duration(timeout) * time.Second
+	productHandler := handler.NewProductHandler(productService, timeOutContext)
+	userHandler := handler.NewUserHandler(userService, timeOutContext)
 
 	// server
 	router := httprouter.New()
 	router.GET("/product", productHandler.GetProductByName)
+	router.POST("/login", userHandler.Authentication)
+	logrus.Infof("Server run on localhost%v", portAddress)
 	log.Fatal(http.ListenAndServe(portAddress, router))
 }

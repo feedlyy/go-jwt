@@ -10,10 +10,12 @@ require (
 	github.com/pressly/goose/v3 v3.13.4
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.16.0
+	golang.org/x/crypto v0.10.0
 )
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
