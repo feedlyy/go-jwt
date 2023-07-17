@@ -46,9 +46,15 @@ func (m Middleware) AuthJWTMiddleware(next httprouter.Handle) httprouter.Handle 
 			return []byte(m.jwt.SecretKey), nil
 		})
 		if err != nil {
-			logrus.Errorf("Middleware|Err jwt parse, err:%v", err)
-			http.Error(writer, err.Error(), http.StatusBadRequest)
-			return
+			switch {
+			case strings.Contains(err.Error(), jwt.ErrTokenExpired.Error()):
+				http.Error(writer, err.Error(), http.StatusUnauthorized)
+				return
+			default:
+				logrus.Errorf("Middleware|Err jwt parse, err:%v", err)
+				http.Error(writer, err.Error(), http.StatusBadRequest)
+				return
+			}
 		}
 
 		// token.Claims are refering to data from what I set on user service: jwt.NewWithClaims
